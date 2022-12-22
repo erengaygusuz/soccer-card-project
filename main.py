@@ -32,11 +32,39 @@ def get_team_names():
             teamNames.append(teamNamesTree[i].xpath('td[2]/a/@href')[0].split('/')[1])
             teamIds.append(teamNamesTree[i].xpath('td[2]/a/@href')[0].split('/')[4])
 
+def get_team_colors(teamColors):
+
+    for i in range(len(teamNames)):
+
+        temaColorUrl = 'https://www.transfermarkt.com.tr/' + teamNames[i] + '/datenfakten/verein/' + teamIds[i]
+
+        tree = requests.get(temaColorUrl, headers=headers)
+        soup = BeautifulSoup(tree.content, 'html.parser')
+
+        arr = soup.findAll('p', class_='vereinsfarbe')
+
+        if len(arr) == 0:
+            randomColor1 = ("#" + ''.join([random.choice('ABCDEF0123456789') for i in range(6)])).lstrip('#')
+            randomColor2 = ("#" + ''.join([random.choice('ABCDEF0123456789') for i in range(6)])).lstrip('#')
+
+            teamColors[i][0] = tuple(int(randomColor1[i:i + 2], 16) for i in (0, 2, 4))
+            teamColors[i][1] = tuple(int(randomColor2[i:i + 2], 16) for i in (0, 2, 4))
+
+        else:
+            h1 = arr[0].findAll('span')[0]["style"].split(':')[1].rstrip(";").lstrip('#')
+            h2 = arr[0].findAll('span')[1]["style"].split(':')[1].rstrip(";").lstrip('#')
+
+            teamColors[i][0] = tuple(int(h1[i:i + 2], 16) for i in (0, 2, 4))
+            teamColors[i][1] = tuple(int(h2[i:i + 2], 16) for i in (0, 2, 4))
+
+
 def main():
     get_team_names()
 
     teamColors = [[0 for i in range(2)] for j in range(len(teamNames))]
     playerInfos = [[str(), list(), list(), list(), list(), list(), list()] for j in range(len(teamNames))]
+
+    get_team_colors(teamColors)
 
 if __name__ == "__main__":
     main()
