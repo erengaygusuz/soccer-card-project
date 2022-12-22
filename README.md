@@ -14,6 +14,8 @@ So, I decided to generate these cards with using transfermarkt datas.
 
 I prepared some base photos as useful source for me. You can see them at below.
 
+![Alt text](/base-photos.png)
+
 I created them using Gimp and MS Power Point.
 
 I used a technique to get data from transfermarkt which is known as web scraping.
