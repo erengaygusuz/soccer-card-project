@@ -19,7 +19,7 @@ I prepared some base photos as useful source for me. You can see them at below.
 I created them using Gimp and MS Power Point.
 
 I used a technique to get data from transfermarkt which is known as web scraping.
-Also, I manupulated the pictures and datas which is downloaded.
+Also, I manipulated the pictures and datas which is downloaded.
 
 You can see the final result as below.
 
