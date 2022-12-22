@@ -17,7 +17,7 @@ playerImageLinks = []
 teamNames = []
 teamIds = []
 
-def get_team_names():
+def get_team_names_and_ids():
 
     leagueLinkAddress = 'https://www.transfermarkt.com.tr/super-lig/startseite/wettbewerb/TR1'
 
@@ -86,7 +86,10 @@ def get_player_datas(playerInfos):
 
                 playerName = players[j]['title']
 
-                playerAge = soupPlayerInfo.find('span',attrs={'class':'data-header__content', 'itemprop':'birthDate'}).text.replace(" ", "").split('(')[1][:2]
+                age = soupPlayerInfo.find('span',attrs={'class':'data-header__content', 'itemprop':'birthDate'})
+                randomAge = random.randint(15, 39)
+                strAge = age.text.replace(" ", "").split('(')[1][:2] if age is not None else str(randomAge)
+                playerAge = strAge
 
                 number = soupPlayerInfo.find('span',attrs={'class':'data-header__shirt-number'})
                 randomNumber = random.randint(0, 99)
@@ -99,8 +102,16 @@ def get_player_datas(playerInfos):
                 playerNumber = strNumber
 
                 value = soupPlayerInfo.find('a',attrs={'class':'data-header__market-value-wrapper'})
-                randomValue = random.randint(50000, 15000000)
-                strValue = value.text.split('€')[0] if value is not None else str(randomValue)
+
+                thousandOrMillion = random.randint(0, 1)
+
+                if thousandOrMillion == 1:
+                    randomValue = random.randint(50, 999)
+                    strValue = value.text.split('€')[0] if value is not None else str(randomValue) + " Bin "
+                else:
+                    randomValue = random.randint(1, 15)
+                    strValue = value.text.split('€')[0] if value is not None else str(randomValue) + ".00 mil. "
+
                 playerValue = strValue + "€"
 
                 height = soupPlayerInfo.find('span',attrs={'class':'data-header__content', 'itemprop':'height'})
@@ -122,12 +133,14 @@ def get_player_datas(playerInfos):
 
         for j in range(len(playerNames)):
 
-            path = "E:\\ProjectFiles\\PythonProjects\\CardProject\\output-photos\\player-photos\\" + teamNames[i] + "\\"
+            absolute_path = os.path.dirname(__file__)
+            relative_path = "output-photos\\player-photos\\" + teamNames[i] + "\\"
+            full_path = os.path.join(absolute_path, relative_path)
 
-            if not os.path.isdir(path):
-                pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+            if not os.path.isdir(full_path):
+                pathlib.Path(full_path).mkdir(parents=True, exist_ok=True)
 
-            urllib.request.urlretrieve(playerImageLinks[j], path + playerNames[j] + '.png')
+            urllib.request.urlretrieve(playerImageLinks[j], full_path + playerNames[j] + '.png')
 
 def calculate_age_constant(ageValue):
     if ageValue < 15:
@@ -149,9 +162,11 @@ def create_team_card_templates(teamColors):
 
     for i in range(len(teamNames)):
 
-        flag_inside1 = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\base-photos\\flag-inside-1.png")
-        flag_inside2 = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\base-photos\\flag-inside-2.png")
-        inline_border = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\base-photos\\inline-border.png")
+        absolute_path = os.path.dirname(__file__)
+
+        flag_inside1 = Image.open(absolute_path + "\\base-photos\\flag-inside-1.png")
+        flag_inside2 = Image.open(absolute_path + "\\base-photos\\flag-inside-2.png")
+        inline_border = Image.open(absolute_path + "\\base-photos\\inline-border.png")
 
         new_image1 = []
         new_image2 = []
@@ -193,24 +208,17 @@ def create_team_card_templates(teamColors):
         flag_inside2.putdata(new_image2)
         inline_border.putdata(new_image3)
 
-        path1 = "E:\\ProjectFiles\\PythonProjects\\CardProject\\output-photos\\team-templates\\" + teamNames[i] + "\\"
-        path2 = "E:\\ProjectFiles\\PythonProjects\\CardProject\\output-photos\\team-templates\\" + teamNames[i] + "\\"
-        path3 = "E:\\ProjectFiles\\PythonProjects\\CardProject\\output-photos\\team-templates\\" + teamNames[i] + "\\"
+        relative_path = "output-photos\\team-templates\\" + teamNames[i] + "\\"
+        full_path = os.path.join(absolute_path, relative_path)
 
-        if not os.path.isdir(path1):
-            pathlib.Path(path1).mkdir(parents=True, exist_ok=True)
+        if not os.path.isdir(full_path):
+            pathlib.Path(full_path).mkdir(parents=True, exist_ok=True)
 
-        if not os.path.isdir(path2):
-            pathlib.Path(path2).mkdir(parents=True, exist_ok=True)
+        flag_inside1.save(full_path + "flag-inside1.png")
 
-        if not os.path.isdir(path3):
-            pathlib.Path(path3).mkdir(parents=True, exist_ok=True)
+        flag_inside2.save(full_path + "flag-inside2.png")
 
-        flag_inside1.save(path1 + "flag-inside1.png")
-
-        flag_inside2.save(path2 + "flag-inside2.png")
-
-        inline_border.save(path3 + "inline-border.png")
+        inline_border.save(full_path + "inline-border.png")
 
 def generate_team_cards(playerInfos):
 
@@ -218,15 +226,17 @@ def generate_team_cards(playerInfos):
 
         for j in range(len(playerInfos[i][1])):
 
-            background = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\base-photos\\background.png")
-            base_info = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\base-photos\\base-info.png")
-            flag_border = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\base-photos\\flag-border.png")
+            absolute_path = os.path.dirname(__file__)
 
-            flag_inside1 = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\output-photos\\team-templates\\" + playerInfos[i][0] + "\\" + "flag-inside1.png")
-            flag_inside2 = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\output-photos\\team-templates\\" + playerInfos[i][0] + "\\" + "flag-inside2.png")
-            inline_border = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\output-photos\\team-templates\\" + playerInfos[i][0] + "\\" + "inline-border.png")
+            background = Image.open(absolute_path + "\\base-photos\\background.png")
+            base_info = Image.open(absolute_path + "\\base-photos\\base-info.png")
+            flag_border = Image.open(absolute_path + "\\base-photos\\flag-border.png")
 
-            photo = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\output-photos\\player-photos\\" + playerInfos[i][0] + "\\" + playerInfos[i][1][j].replace(" ", "-").lower() + ".png")
+            flag_inside1 = Image.open(absolute_path + "\\output-photos\\team-templates\\" + playerInfos[i][0] + "\\" + "flag-inside1.png")
+            flag_inside2 = Image.open(absolute_path + "\\output-photos\\team-templates\\" + playerInfos[i][0] + "\\" + "flag-inside2.png")
+            inline_border = Image.open(absolute_path + "\\output-photos\\team-templates\\" + playerInfos[i][0] + "\\" + "inline-border.png")
+
+            photo = Image.open(absolute_path + "\\output-photos\\player-photos\\" + playerInfos[i][0] + "\\" + playerInfos[i][1][j].replace(" ", "-").lower() + ".png")
 
             photo = photo.resize((550, 700))
 
@@ -234,14 +244,16 @@ def generate_team_cards(playerInfos):
 
             im.paste(photo, (150, 110))
 
-            path = "E:\\ProjectFiles\\PythonProjects\\CardProject\\output-photos\\resized-player-photos\\" + playerInfos[i][0] + "\\"
+            relative_path = "output-photos\\resized-player-photos\\" + playerInfos[i][0] + "\\"
 
-            if not os.path.isdir(path):
-                pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+            full_path = os.path.join(absolute_path, relative_path)
 
-            im.save(path + playerInfos[i][1][j].replace(" ", "-").lower() + ".png")
+            if not os.path.isdir(full_path):
+                pathlib.Path(full_path).mkdir(parents=True, exist_ok=True)
 
-            photo = Image.open(path + playerInfos[i][1][j].replace(" ", "-").lower() + ".png")
+            im.save(full_path + playerInfos[i][1][j].replace(" ", "-").lower() + ".png")
+
+            photo = Image.open(full_path + playerInfos[i][1][j].replace(" ", "-").lower() + ".png")
 
             img1 = Image.alpha_composite(background, photo)
             img2 = Image.alpha_composite(img1, base_info)
@@ -252,9 +264,9 @@ def generate_team_cards(playerInfos):
 
             i1 = ImageDraw.Draw(img6)
 
-            nameFont = ImageFont.truetype('E:\\ProjectFiles\\PythonProjects\\CardProject\\fonts\\arial-narrow.ttf', 60)
-            infoFont = ImageFont.truetype('E:\\ProjectFiles\\PythonProjects\\CardProject\\fonts\\UniversalisADFStd-CondItalic.otf', 53)
-            numberFont = ImageFont.truetype('E:\\ProjectFiles\\PythonProjects\\CardProject\\fonts\\arial.ttf', 60)
+            nameFont = ImageFont.truetype(absolute_path + '\\fonts\\arial-narrow.ttf', 60)
+            infoFont = ImageFont.truetype(absolute_path + '\\fonts\\UniversalisADFStd-CondItalic.otf', 53)
+            numberFont = ImageFont.truetype(absolute_path + '\\fonts\\arial.ttf', 60)
 
             name = playerInfos[i][1][j]
 
@@ -272,15 +284,17 @@ def generate_team_cards(playerInfos):
             i1.text((img6.width*(3/4) + 50, 1120), value, font=infoFont, fill=(0, 0, 0), anchor="mm")
             i1.text((img6.width*(3/4) + 92, 125), number, font=numberFont, fill=(0, 0, 0), anchor="mm")
 
-            path = "E:\\ProjectFiles\\PythonProjects\\CardProject\\output-photos\\final-results\\" + playerInfos[i][0] + "\\"
+            relative_path = "output-photos\\final-results\\" + playerInfos[i][0] + "\\"
 
-            if not os.path.isdir(path):
-                pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+            full_path = os.path.join(absolute_path, relative_path)
 
-            img6.save(path + playerInfos[i][1][j].replace(" ", "-").lower() + ".png")
+            if not os.path.isdir(full_path):
+                pathlib.Path(full_path).mkdir(parents=True, exist_ok=True)
+
+            img6.save(full_path + playerInfos[i][1][j].replace(" ", "-").lower() + ".png")
 
 def main():
-    get_team_names()
+    get_team_names_and_ids()
 
     teamColors = [[0 for i in range(2)] for j in range(len(teamNames))]
     playerInfos = [[str(), list(), list(), list(), list(), list(), list()] for j in range(len(teamNames))]
@@ -289,6 +303,6 @@ def main():
     get_player_datas(playerInfos)
     create_team_card_templates(teamColors)
     generate_team_cards(playerInfos)
-    
+
 if __name__ == "__main__":
     main()
