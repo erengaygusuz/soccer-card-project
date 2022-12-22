@@ -212,6 +212,72 @@ def create_team_card_templates(teamColors):
 
         inline_border.save(path3 + "inline-border.png")
 
+def generate_team_cards(playerInfos):
+
+    for i in range(len(playerInfos)):
+
+        for j in range(len(playerInfos[i][1])):
+
+            background = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\base-photos\\background.png")
+            base_info = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\base-photos\\base-info.png")
+            flag_border = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\base-photos\\flag-border.png")
+
+            flag_inside1 = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\output-photos\\team-templates\\" + playerInfos[i][0] + "\\" + "flag-inside1.png")
+            flag_inside2 = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\output-photos\\team-templates\\" + playerInfos[i][0] + "\\" + "flag-inside2.png")
+            inline_border = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\output-photos\\team-templates\\" + playerInfos[i][0] + "\\" + "inline-border.png")
+
+            photo = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\output-photos\\player-photos\\" + playerInfos[i][0] + "\\" + playerInfos[i][1][j].replace(" ", "-").lower() + ".png")
+
+            photo = photo.resize((550, 700))
+
+            im = Image.new(mode="RGBA", size=(background.width, background.height))
+
+            im.paste(photo, (150, 110))
+
+            path = "E:\\ProjectFiles\\PythonProjects\\CardProject\\output-photos\\resized-player-photos\\" + playerInfos[i][0] + "\\"
+
+            if not os.path.isdir(path):
+                pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+
+            im.save(path + playerInfos[i][1][j].replace(" ", "-").lower() + ".png")
+
+            photo = Image.open(path + playerInfos[i][1][j].replace(" ", "-").lower() + ".png")
+
+            img1 = Image.alpha_composite(background, photo)
+            img2 = Image.alpha_composite(img1, base_info)
+            img3 = Image.alpha_composite(img2, inline_border)
+            img4 = Image.alpha_composite(img3, flag_inside1)
+            img5 = Image.alpha_composite(img4, flag_inside2)
+            img6 = Image.alpha_composite(img5, flag_border)
+
+            i1 = ImageDraw.Draw(img6)
+
+            nameFont = ImageFont.truetype('E:\\ProjectFiles\\PythonProjects\\CardProject\\fonts\\arial-narrow.ttf', 60)
+            infoFont = ImageFont.truetype('E:\\ProjectFiles\\PythonProjects\\CardProject\\fonts\\UniversalisADFStd-CondItalic.otf', 53)
+            numberFont = ImageFont.truetype('E:\\ProjectFiles\\PythonProjects\\CardProject\\fonts\\arial.ttf', 60)
+
+            name = playerInfos[i][1][j]
+
+            age = playerInfos[i][2][j]
+            weight = playerInfos[i][6][j]
+            height = playerInfos[i][5][j]
+            value = playerInfos[i][4][j]
+            number = playerInfos[i][3][j]
+
+            i1.text((img6.width/2, 902), name, font=nameFont, fill=(0, 0, 0), anchor="mm")
+
+            i1.text((img6.width/4, 1028), age, font=infoFont, fill=(0, 0, 0), anchor="mm")
+            i1.text((img6.width*(3/4), 1028), weight, font=infoFont, fill=(0, 0, 0), anchor="mm")
+            i1.text((img6.width/4 + 40, 1120), height, font=infoFont, fill=(0, 0, 0), anchor="mm")
+            i1.text((img6.width*(3/4) + 50, 1120), value, font=infoFont, fill=(0, 0, 0), anchor="mm")
+            i1.text((img6.width*(3/4) + 92, 125), number, font=numberFont, fill=(0, 0, 0), anchor="mm")
+
+            path = "E:\\ProjectFiles\\PythonProjects\\CardProject\\output-photos\\final-results\\" + playerInfos[i][0] + "\\"
+
+            if not os.path.isdir(path):
+                pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+
+            img6.save(path + playerInfos[i][1][j].replace(" ", "-").lower() + ".png")
 
 def main():
     get_team_names()
@@ -222,6 +288,7 @@ def main():
     get_team_colors(teamColors)
     get_player_datas(playerInfos)
     create_team_card_templates(teamColors)
+    generate_team_cards(playerInfos)
     
 if __name__ == "__main__":
     main()
