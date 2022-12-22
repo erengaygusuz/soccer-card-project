@@ -145,6 +145,72 @@ def calculate_age_constant(ageValue):
     else:
         return 1.1
 
+def create_team_card_templates(teamColors):
+
+    for i in range(len(teamNames)):
+
+        flag_inside1 = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\base-photos\\flag-inside-1.png")
+        flag_inside2 = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\base-photos\\flag-inside-2.png")
+        inline_border = Image.open("E:\\ProjectFiles\\PythonProjects\\CardProject\\base-photos\\inline-border.png")
+
+        new_image1 = []
+        new_image2 = []
+        new_image3 = []
+
+        flag_inside1 = flag_inside1.convert("RGBA")
+        flag_inside2 = flag_inside2.convert("RGBA")
+        inline_border = inline_border.convert("RGBA")
+
+        d1 = flag_inside1.getdata()
+        d2 = flag_inside2.getdata()
+        d3 = inline_border.getdata()
+
+        color1 = teamColors[i][0]
+        color2 = teamColors[i][1]
+
+        for item in d1:
+
+            if item[0] in list(range(200, 256)):
+                new_image1.append(color1)
+            else:
+                new_image1.append(item)
+
+        for item in d2:
+
+            if item[0] in list(range(200, 256)):
+                new_image2.append(color2)
+            else:
+                new_image2.append(item)
+
+        for item in d3:
+
+            if item[0] in list(range(200, 256)):
+                new_image3.append(color1)
+            else:
+                new_image3.append(item)
+
+        flag_inside1.putdata(new_image1)
+        flag_inside2.putdata(new_image2)
+        inline_border.putdata(new_image3)
+
+        path1 = "E:\\ProjectFiles\\PythonProjects\\CardProject\\output-photos\\team-templates\\" + teamNames[i] + "\\"
+        path2 = "E:\\ProjectFiles\\PythonProjects\\CardProject\\output-photos\\team-templates\\" + teamNames[i] + "\\"
+        path3 = "E:\\ProjectFiles\\PythonProjects\\CardProject\\output-photos\\team-templates\\" + teamNames[i] + "\\"
+
+        if not os.path.isdir(path1):
+            pathlib.Path(path1).mkdir(parents=True, exist_ok=True)
+
+        if not os.path.isdir(path2):
+            pathlib.Path(path2).mkdir(parents=True, exist_ok=True)
+
+        if not os.path.isdir(path3):
+            pathlib.Path(path3).mkdir(parents=True, exist_ok=True)
+
+        flag_inside1.save(path1 + "flag-inside1.png")
+
+        flag_inside2.save(path2 + "flag-inside2.png")
+
+        inline_border.save(path3 + "inline-border.png")
 
 
 def main():
@@ -155,6 +221,7 @@ def main():
 
     get_team_colors(teamColors)
     get_player_datas(playerInfos)
+    create_team_card_templates(teamColors)
     
 if __name__ == "__main__":
     main()
